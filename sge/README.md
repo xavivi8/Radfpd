@@ -26,17 +26,6 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
 
-## Apuntes
-  1. Crear módulo con routing ```ng g m nombreModulo --routing```
-  2. Crear componentes con solo el ts component y el html ```ng g c nombreComponente --inline-style --skip-tests```
-
-## FACILITIES
-
-### Material
-  1. Añadir material con el comando ```ng add @angular/material```
-  2. A la pregunta ```Would you like to proceed?``` le decimos que si ```y```
-  3. Al elegir el tema yo uso el ```Purple/Green```
-  4. A la pregunta ```Include the Angular animations module?``` elegimos la opción ```Include and enable animations```
 
 # TODO
 Añadir creador a la reuniones (dinamizadores)
