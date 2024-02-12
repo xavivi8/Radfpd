@@ -33,15 +33,15 @@ class Vacantes extends Conexion
     public function create($data)
     {
         $id_vacante = isset($data['id_vacante']) ? $data['id_vacante'] : null;
-        $entidad = isset($data['entidad']) ? $data['entidad'] : null;
+        $id_entidad = isset($data['id_entidad']) ? $data['id_entidad'] : null;
         $id_unidad_centro = isset($data['id_unidad_centro']) ? $data['id_unidad_centro'] : null;
         $num_alumnos = isset($data['num_alumnos']) ? $data['num_alumnos'] : null;
 
-        if (isset($id_vacante) && isset($entidad) && isset($id_unidad_centro)) {
-            $sql = $this->conexion->prepare("INSERT INTO sgi_vacantes (id_vacante, entidad, id_unidad_centro, num_alumnos)
-                    VALUES (:id_vacante, :entidad, :id_unidad_centro, :num_alumnos)");
+        if (isset($id_vacante)/*  && isset($id_entidad) && isset($id_unidad_centro) */) {
+            $sql = $this->conexion->prepare("INSERT INTO sgi_vacantes (id_vacante, id_entidad, id_unidad_centro, num_alumnos)
+                    VALUES (:id_vacante, :id_entidad, :id_unidad_centro, :num_alumnos)");
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
-            $sql->bindParam(":entidad", $entidad, PDO::PARAM_STR);
+            $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_INT);
             $sql->bindParam(":id_unidad_centro", $id_unidad_centro, PDO::PARAM_INT);
             $sql->bindParam(":num_alumnos", $num_alumnos, PDO::PARAM_INT);
 
@@ -61,20 +61,20 @@ class Vacantes extends Conexion
     public function update($data)
     {
         $id_vacante = $data['id_vacante'];
-        $entidad = $data['entidad'];
+        $id_entidad = $data['id_entidad'];
         $id_unidad_centro = $data['id_unidad_centro'];
         $num_alumnos = $data['num_alumnos'];
 
-        if (isset($id_vacante) && isset($entidad) && isset($id_unidad_centro)) {
+        if (isset($id_vacante) && isset($id_entidad) && isset($id_unidad_centro)) {
             $sql = $this->conexion->prepare("UPDATE sgi_vacantes SET
                     id_vacante = :id_vacante,
-                    entidad = :entidad,
+                    id_entidad = :id_entidad,
                     id_unidad_centro = :id_unidad_centro,
                     num_alumnos = :num_alumnos
                     WHERE id_vacante = :id_vacante");
 
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
-            $sql->bindParam(":entidad", $entidad, PDO::PARAM_STR);
+            $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_INT);
             $sql->bindParam(":id_unidad_centro", $id_unidad_centro, PDO::PARAM_INT);
             $sql->bindParam(":num_alumnos", $num_alumnos, PDO::PARAM_INT);
 
