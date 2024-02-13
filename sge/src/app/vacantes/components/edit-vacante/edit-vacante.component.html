@@ -1,1 +1,89 @@
-<p>edit-vacante works!</p>
+<div class="container">
+  <h3 mat-dialog-title>Editar vacante</h3>
+
+  <form class="mat-dialog-content" [formGroup]="vacanteForm">
+      <div class="form">
+          <mat-form-field>
+              <mat-label>Entidad</mat-label>
+              <mat-select formControlName="entidad">
+                  <mat-option *ngFor="let entidad of entidades" [value]="entidad.entidad">
+                      {{ entidad.entidad }}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+      </div>
+
+      <div class="form">
+          <mat-form-field>
+              <mat-label>Unidad Centro</mat-label>
+              <mat-select formControlName="id_unidad_centro">
+                  <mat-option *ngFor="let unidad of unidades" [value]="unidad.id_unidad_centro">
+                      {{ unidad.id_unidad_centro }}
+                  </mat-option>
+              </mat-select>
+          </mat-form-field>
+      </div>
+
+      <div class="form">
+        <mat-form-field appearance="fill">
+          <mat-label>Nombre de la Unidad Centro</mat-label>
+          <input matInput [value]="getNombreUnidadCentroSeleccionada()" readonly>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field>
+        <mat-label>Número total de Alumnos</mat-label>
+        <mat-select [formControl]="num_alumnos" (change)="onChangeNumAlumnos()">
+          <mat-option *ngFor="let num of generarOpciones()" [value]="num">
+            {{ num }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Nuevo campo para mostrar la cantidad de alumnos seleccionados -->
+      <mat-form-field appearance="fill">
+        <mat-label>Elegidos / Total</mat-label>
+        <input matInput [value]="vacanteForm.get('elegidos_total').value" readonly>
+      </mat-form-field>
+
+      <div class="alumnos-container">
+        <div class="alumnos-disponibles">
+          <h4>Alumnos disponibles:</h4>
+          <mat-list dense>
+            <mat-list-item *ngFor="let alumno of alumnadoUnidadElegida">
+              <div mat-line>{{ alumno.nombre }} {{ alumno.apellidos }}</div>
+              <div mat-list-avatar></div> <!-- Mantener el avatar al principio -->
+              <div mat-list-text> <!-- Mover el contenido del texto después del avatar -->
+                <button mat-icon-button (click)="seleccionarAlumno(alumno)">
+                  <mat-icon>arrow_right_alt</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div *ngIf="alumnadoUnidadElegida.length === 0">No hay alumnos disponibles.</div>
+        </div>
+
+        <div class="alumnos-seleccionados">
+          <h4>Alumnos seleccionados:</h4>
+          <mat-list dense>
+            <mat-list-item *ngFor="let alumno of alumnosSeleccionados">
+              <div mat-line>{{ alumno.nombre }} {{ alumno.apellidos }}</div>
+              <div mat-list-avatar></div> <!-- Mantener el avatar al principio -->
+              <div mat-list-text> <!-- Mover el contenido del texto después del avatar -->
+                <button mat-icon-button (click)="quitarAlumno(alumno)">
+                  <mat-icon>reply</mat-icon>
+                </button>
+              </div>
+            </mat-list-item>
+          </mat-list>
+          <div *ngIf="alumnosSeleccionados.length === 0">No hay alumnos seleccionados.</div>
+        </div>
+      </div>
+
+      <div class="actions">
+          <button mat-button id="onSubmit" type="submit" [disabled]="!vacanteForm.valid" (click)="confirmEdit()">Guardar</button>
+          <button mat-button id="onNoClick" (click)="onNoClick()" tabindex="-1">Cancelar</button>
+      </div>
+
+  </form>
+</div>
