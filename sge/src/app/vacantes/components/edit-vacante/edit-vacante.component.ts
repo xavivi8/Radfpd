@@ -94,7 +94,10 @@ export class EditVacanteComponent implements OnInit {
 
     // Generar las opciones del select desde numAlumnosSeleccionados hasta el maximoAlumnos
     const opciones = [];
+
     for (let i = numAlumnosSeleccionados; i <= maximoAlumnos; i++) {
+      console.log(i);
+
       opciones.push(i);
     }
     return opciones;
