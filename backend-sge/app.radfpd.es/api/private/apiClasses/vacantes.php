@@ -120,19 +120,19 @@ class Vacantes extends Conexion
     public function getAlumnado($data)
     {
 
-        $sql = $this->conexion->prepare("SELECT a.id_alumno, a.nombre, a.apellidos, CASE 
-            WHEN a.id_alumno IN (
-                SELECT sgi_alumnos.id_alumno 
-                FROM sgi_alumnos 
-                INNER JOIN sgi_vacantes_X_alumnos ON sgi_vacantes_X_alumnos.id_alumno = sgi_alumnos.id_alumno
+        $sql = $this->conexion->prepare("SELECT a.id, a.nombre, a.apellidos, CASE 
+            WHEN a.id IN (
+                SELECT sgi_alumnado.id 
+                FROM sgi_alumnado 
+                INNER JOIN sgi_vacantes_X_alumnos ON sgi_vacantes_X_alumnos.id_alumno = sgi_alumnado.id
                 WHERE sgi_vacantes_X_alumnos.id_vacante = :id_vacante
             ) THEN 1 
             ELSE 0
             END AS estado
-            FROM sgi_alumnos a
-            WHERE a.id_unidad_centro = :id_unidad_centro ");
+            FROM sgi_alumnado a
+            WHERE a.centro_actual = :centro_actual ");
         $sql->bindParam(":id_vacante", $data['id_vacante'], PDO::PARAM_INT);
-        $sql->bindParam(":id_unidad_centro", $data['id_unidad_centro'], PDO::PARAM_INT);
+        $sql->bindParam(":centro_actual", $data['centro_actual'], PDO::PARAM_INT);
         
         $exito = $sql->execute();
 
