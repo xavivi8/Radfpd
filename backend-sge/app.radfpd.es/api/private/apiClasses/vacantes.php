@@ -37,7 +37,7 @@ class Vacantes extends Conexion
         $id_unidad_centro = isset($data['id_unidad_centro']) ? $data['id_unidad_centro'] : null;
         $num_alumnos = isset($data['num_alumnos']) ? $data['num_alumnos'] : null;
 
-        if (isset($id_vacante)/*  && isset($id_entidad) && isset($id_unidad_centro) */) {
+        if (isset($id_vacante)  && isset($id_entidad) && isset($id_unidad_centro) ) {
             $sql = $this->conexion->prepare("INSERT INTO sgi_vacantes (id_vacante, id_entidad, id_unidad_centro, num_alumnos)
                     VALUES (:id_vacante, :id_entidad, :id_unidad_centro, :num_alumnos)");
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
