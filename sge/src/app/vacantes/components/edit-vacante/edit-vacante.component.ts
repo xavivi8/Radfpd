@@ -96,8 +96,7 @@ export class EditVacanteComponent implements OnInit {
     const opciones = [];
 
     for (let i = numAlumnosSeleccionados; i <= maximoAlumnos; i++) {
-      console.log(i);
-
+     
       opciones.push(i);
     }
     return opciones;
