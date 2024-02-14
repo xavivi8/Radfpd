@@ -130,9 +130,9 @@ class Vacantes extends Conexion
             ELSE 0
             END AS estado
             FROM sgi_alumnado a
-            WHERE a.centro_actual = :centro_actual ");
+            WHERE a.id_unidad_centro = :id_unidad_centro ");
         $sql->bindParam(":id_vacante", $data['id_vacante'], PDO::PARAM_INT);
-        $sql->bindParam(":centro_actual", $data['centro_actual'], PDO::PARAM_INT);
+        $sql->bindParam(":id_unidad_centro", $data['id_unidad_centro'], PDO::PARAM_INT);
         
         $exito = $sql->execute();
 
