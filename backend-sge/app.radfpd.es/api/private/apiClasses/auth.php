@@ -69,6 +69,7 @@ class Auth extends Conexion  {
                         "rol" =>  $this->datos_usuarios["rol"],
                         "token" =>  $authorization->token_encrypt,
                         "nombre_publico" =>  $this->datos_usuarios["nombre_publico"],
+                        "id" =>  $this->datos_usuarios["id_usuario"],
                         "opcion" =>  $this->opcion,
                         "grupo" =>  $this->grupo,
                         "accion" =>  $this->accion

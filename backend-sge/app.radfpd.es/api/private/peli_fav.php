@@ -1,6 +1,5 @@
 <?php
-
-require_once('./apiClasses/peli_fav.php');
+require_once('./apiClasses/peli_fav.php'); // Asumiendo que este archivo contiene las clases necesarias
 
 $api_utils = new ApiUtils();
 $api_utils->setHeaders($api_utils::ALL_HEADERS);
@@ -13,49 +12,42 @@ $request = json_decode(file_get_contents("php://input"), true);
 
 $peli_fav = new PeliFav();
 
-// Obtener el id_usuario de la solicitud
-$id_usuario = isset($_GET["id_usuario"]) ? $_GET["id_usuario"] : null;
+if (isset($_GET["usuario"])) {
+    $usuario = $_GET["usuario"];
+}
 
 if ($authorization->token_valido) {
 
     switch ($_SERVER['REQUEST_METHOD']) {
         case $api_utils::GET:
-            // Obtener todas las películas favoritas para un usuario dado
-            if ($id_usuario) {
-                $peli_fav->getAllByUserId($id_usuario);
+            if (isset($usuario)) {
+                $peli_fav->getAllPeliFav($usuario);
             } else {
-                // Error: Falta el id_usuario en la solicitud
-                $peli_fav->message = "Falta el id_usuario en la solicitud.";
+                $peli_fav->message = "ID de usuario no proporcionado.";
             }
             break;
         case $api_utils::POST:
-            // Insertar una nueva película favorita para un usuario dado
-            if ($id_usuario && isset($request['identificador'])) {
-                $peli_fav->insert($id_usuario, $request['identificador']);
+            if (isset($request['usuario']) && isset($request['identificador'])) {
+                $peli_fav->insertPeliFav($request['usuario'], $request['identificador']);
             } else {
-                // Error: Faltan datos en la solicitud
-                $peli_fav->message = "Faltan datos en la solicitud.";
+                $peli_fav->message = "Datos incompletos para insertar una nueva película favorita.";
             }
             break;
         case $api_utils::DELETE:
-            // Eliminar una película favorita para un usuario dado
-            if ($id_usuario && isset($request['id_pelicula_fav'])) {
-                $peli_fav->delete($id_usuario, $request['id_pelicula_fav']);
+            if (isset($request['usuario']) && isset($request['identificador'])) {
+                $peli_fav->deletePeliFav($request['usuario'], $request['identificador']);
             } else {
-                // Error: Faltan datos en la solicitud
-                $peli_fav->message = "Faltan datos en la solicitud.";
+                $peli_fav->message = "Datos incompletos para eliminar una película favorita.";
             }
             break;
         default:
-            // Método de solicitud no válido
-            $peli_fav->message = "Método de solicitud no válido.";
-            break;
+            $peli_fav->message = "Método HTTP no soportado.";
     }
 } else {
-    $peli_fav->message = NO_TOKEN_MESSAGE;
+    $peli_fav->message = "Token inválido.";
 }
 
-$api_utils->response($peli_fav->status, $peli_fav->message, $peli_fav->data);
+$api_utils->response($peli_fav->status, $peli_fav->message, $peli_fav->data, null);
 echo json_encode($api_utils->response, JSON_PRETTY_PRINT);
 
 ?>

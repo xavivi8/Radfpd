@@ -1,33 +1,28 @@
 <?php
 
-require_once('interfaces/crud.php');
 require_once('../conn.php');
 
-class PeliFav extends Conexion implements crud {
+class PeliFav extends Conexion {
 
     public $status = false;
     public $message = NULL;
     public $data = NULL;
 
-    const ROUTE = 'peliculas';
-    const ROUTE_PROFILE = 'profile';
-
     function __construct (){
         parent::__construct();
     }
 
-    public function insert($id_usuario, $identificador) {
+    public function insertPeliFav($usuario, $identificador) {
         try {
-            $sql = $this->conexion->prepare("INSERT INTO sgi_peli_fav (id_usuario, identificador) VALUES (:id_usuario, :identificador)");
-            $sql->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
-            $sql->bindParam(":identificador", $identificador, PDO::PARAM_INT);
+            $sql = $this->conexion->prepare("INSERT INTO `sgi_peli_fav` (usuario, identificador) VALUES (:usuario, :identificador)");
+            $sql->bindParam(":usuario", $usuario);
+            $sql->bindParam(":identificador", $identificador);
             $resultado = $sql->execute();
-
-            if ($resultado) {
+            if ($resultado){
                 $this->status = true;
-                $this->message = "Película favorita insertada correctamente.";
+                $this->message = "Película favorita agregada correctamente";
             } else {
-                $this->message = "Error al insertar la película favorita.";
+                $this->message = "Error al agregar la película favorita";
             }
         } catch(PDOException $error) {
             $this->message = $error->getMessage();
@@ -35,32 +30,37 @@ class PeliFav extends Conexion implements crud {
         $this->closeConnection();
     }
 
-    public function delete($id_usuario, $identificador) {
+    public function deletePeliFav($usuario, $identificador) {
         try {
-            $sql = $this->conexion->prepare("DELETE FROM sgi_peli_fav WHERE id_usuario = :id_usuario AND identificador = :identificador");
-            $sql->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
-            $sql->bindParam(":identificador", $identificador, PDO::PARAM_INT);
+            $sql = $this->conexion->prepare("DELETE FROM `sgi_peli_fav` WHERE `usuario`=:usuario AND `identificador`=:identificador");
+            $sql->bindParam(":usuario", $usuario);
+            $sql->bindParam(":identificador", $identificador);
             $resultado = $sql->execute();
-
-            if ($resultado) {
+            if ($resultado){
                 $this->status = true;
-                $this->message = "Película favorita eliminada correctamente.";
+                $this->message = "Película favorita eliminada correctamente";
             } else {
-                $this->message = "Error al eliminar la película favorita.";
+                $this->message = "Error al eliminar la película favorita";
             }
         } catch(PDOException $error) {
             $this->message = $error->getMessage();
         }
         $this->closeConnection();
+        
     }
 
-    public function getAllByUserId($id_usuario) {
+    public function getAllPeliFav($usuario) {
         try {
-            $sql = $this->conexion->prepare("SELECT * FROM sgi_peli_fav WHERE id_usuario = :id_usuario");
-            $sql->bindParam(":id_usuario", $id_usuario, PDO::PARAM_INT);
+            $sql = $this->conexion->prepare("SELECT * FROM `sgi_peli_fav` WHERE `usuario`=:usuario");
+            $sql->bindParam(":usuario", $usuario);
             $sql->execute();
-            $this->data = $sql->fetchAll(PDO::FETCH_ASSOC);
-            $this->status = true;
+            $resultados = $sql->fetchAll(PDO::FETCH_ASSOC);
+            if ($resultados){
+                $this->status = true;
+                $this->data = $resultados;
+            } else {
+                $this->message = "No se encontraron películas favoritas para este usuario";
+            }
         } catch(PDOException $error) {
             $this->message = $error->getMessage();
         }
