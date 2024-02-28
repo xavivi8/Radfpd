@@ -32,11 +32,7 @@ if (isset($_GET["id_unidad_centro"])) {
     $alumnosSeleccionados = 0;
 }
 
-if (isset($_GET["alumnosSeleccionados"])) {
-    $alumnosSeleccionados = $_GET["alumnosSeleccionados"];
-} else {
-    $alumnosSeleccionados = 0;
-}
+$alumnosSeleccionados = isset($_GET["alumnosSeleccionados"]) ? $_GET["alumnosSeleccionados"] : 0;
 
 
 if ($authorization->token_valido) {
