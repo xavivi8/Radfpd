@@ -38,7 +38,7 @@ class Vacantes extends Conexion
         $num_alumnos = isset($data['num_alumnos']) ? $data['num_alumnos'] : null;
 
         if (isset($id_vacante)  && isset($id_entidad) && isset($id_unidad_centro) ) {
-            $sql = $this->conexion->prepare("INSERT INTO sgi_vacantes (id_vacante, id_entidad, id_unidad_centro, num_alumnos)
+            $sql = $this->conexion->prepare("INSERT INTO sgi_vacantes (id_vacante, entidad, id_unidad_centro, num_alumnos)
                     VALUES (:id_vacante, :id_entidad, :id_unidad_centro, :num_alumnos)");
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
             $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_INT);
@@ -68,7 +68,7 @@ class Vacantes extends Conexion
         if (isset($id_vacante) && isset($id_entidad) && isset($id_unidad_centro)) {
             $sql = $this->conexion->prepare("UPDATE sgi_vacantes SET
                     id_vacante = :id_vacante,
-                    id_entidad = :id_entidad,
+                    entidad = :id_entidad,
                     id_unidad_centro = :id_unidad_centro,
                     num_alumnos = :num_alumnos
                     WHERE id_vacante = :id_vacante");
@@ -119,30 +119,30 @@ class Vacantes extends Conexion
     // seleccionados o no, si ya fue seleccionado 'estado' se pondrá en 1, si no fue seleccionado 'estado' se pondrá en 0
     public function getAlumnado($data)
     {
-
-        $sql = $this->conexion->prepare("SELECT a.id, a.nombre, a.apellidos, CASE 
-            WHEN a.id IN (
-                SELECT sgi_alumnado.id 
-                FROM sgi_alumnado 
-                INNER JOIN sgi_vacantes_X_alumnos ON sgi_vacantes_X_alumnos.id_alumno = sgi_alumnado.id
-                WHERE sgi_vacantes_X_alumnos.id_vacante = :id_vacante
-            ) THEN 1 
-            ELSE 0
-            END AS estado
+        $sql = $this->conexion->prepare("
+            SELECT a.id, a.nombre, a.apellidos,
+                CASE 
+                    WHEN a.id IN (
+                        SELECT vxa.id_alumno
+                        FROM sgi_vacantes_X_alumnos vxa
+                        INNER JOIN sgi_vacantes v ON vxa.id_vacante = v.id_vacante
+                        WHERE v.id_unidad_centro = :id_unidad_centro
+                    ) THEN 1 
+                    ELSE 0
+                END AS estado
             FROM sgi_alumnado a
-            WHERE a.id_unidad_centro = :id_unidad_centro ");
-        $sql->bindParam(":id_vacante", $data['id_vacante'], PDO::PARAM_INT);
+            WHERE a.id_unidad_centro = :id_unidad_centro");
         $sql->bindParam(":id_unidad_centro", $data['id_unidad_centro'], PDO::PARAM_INT);
         
         $exito = $sql->execute();
-
+    
         if ($exito) {
             $this->status = true;
             $this->data = $sql->fetchAll(PDO::FETCH_ASSOC);
         } else {
             $this->message = "Error al obtener los valores de la tabla 'sgi_vacantes_X_alumnos'.";
         }
-
+    
         $this->closeConnection();
     }
     
