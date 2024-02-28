@@ -74,7 +74,7 @@ class Vacantes extends Conexion
                     WHERE id_vacante = :id_vacante");
 
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
-            $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_INT);
+            $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_STR);
             $sql->bindParam(":id_unidad_centro", $id_unidad_centro, PDO::PARAM_INT);
             $sql->bindParam(":num_alumnos", $num_alumnos, PDO::PARAM_INT);
 
