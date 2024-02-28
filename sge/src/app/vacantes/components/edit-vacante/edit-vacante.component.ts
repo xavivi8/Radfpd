@@ -49,7 +49,7 @@ export class EditVacanteComponent implements OnInit {
 
     this.vacanteForm = new FormGroup({
       id_vacante: new FormControl(this.vacante.id_vacante),
-      entidad: new FormControl(this.vacante.entidad, Validators.required),
+      id_entidad: new FormControl(this.vacante.entidad, Validators.required),
       id_unidad_centro: new FormControl(this.vacante.id_unidad_centro,Validators.required),
       num_alumnos: this.num_alumnos,
       alumnadoUnidad: new FormControl(this.alumnadoUnidadElegida),
@@ -96,7 +96,7 @@ export class EditVacanteComponent implements OnInit {
     const opciones = [];
 
     for (let i = numAlumnosSeleccionados; i <= maximoAlumnos; i++) {
-     
+
       opciones.push(i);
     }
     return opciones;
@@ -175,6 +175,7 @@ export class EditVacanteComponent implements OnInit {
       );
 
       const RESP = await this.servicioVacante.editVacante(vacante).toPromise();
+      console.log(RESP);
       if (RESP.ok) {
         const RESP2 = await this.servicioVacante
           .insertarAlumnosSeleccionados(vacante.id_vacante, idsAlumnos)
@@ -186,6 +187,7 @@ export class EditVacanteComponent implements OnInit {
       }
     } else {
       this.snackBar.open(INVALID_FORM, CLOSE, { duration: 5000 });
+      this.dialogRef.close({ ok: false });
     }
   }
 
@@ -247,8 +249,12 @@ export class EditVacanteComponent implements OnInit {
   // Método para mostrar el nombre de la unidad_centro correspondiente al id_unidad_centro elegido
   getNombreUnidadCentroSeleccionada(): string {
     const idSeleccionado = this.vacanteForm.get('id_unidad_centro').value;
-    const unidadSeleccionada = this.unidades.find(unidad => unidad.id_unidad_centro === idSeleccionado);
-    return unidadSeleccionada ? unidadSeleccionada.unidad_centro : '';
+    console.log(this.unidades)
+    if (this.unidades && this.unidades.length > 0) {
+      const unidadSeleccionada = this.unidades.find(unidad => unidad.id_unidad_centro === idSeleccionado);
+      return unidadSeleccionada ? unidadSeleccionada.unidad_centro : '';
+    }
+    return '';
   }
 
   onNoClick(): void {
