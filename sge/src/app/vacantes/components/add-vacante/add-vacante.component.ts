@@ -58,14 +58,18 @@ export class AddVacanteComponent implements OnInit {
       const vacante = this.vacanteForm.value;
       console.log(this.vacanteForm.value);
       const RESP = await this.servicioVacante.addVacante(vacante).toPromise();
+      console.log(RESP);
+
       if (RESP.ok) {
         this.snackBar.open(RESP.message, CLOSE, { duration: 5000 });
         this.dialogRef.close({ok: RESP.ok, data: RESP.data});
       } else {
         this.snackBar.open(RESP.message, CLOSE, { duration: 5000 });
+
       }
     } else {
       this.snackBar.open(INVALID_FORM, CLOSE, { duration: 5000 });
+      this.dialogRef.close({ok: false});
     }
   }
 
