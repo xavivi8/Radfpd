@@ -34,7 +34,7 @@ export class AddVacanteComponent implements OnInit {
       id_unidad_centro: new FormControl(null, Validators.required),
       num_alumnos: new FormControl(null, Validators.required),
     });
-
+    console.log("Es una add vacante"+this.vacanteForm.value)
     this.getEntidades();
     this.getUnidadesCentro();
   }
@@ -56,7 +56,7 @@ export class AddVacanteComponent implements OnInit {
   async confirmAdd() {
     if (this.vacanteForm.valid) {
       const vacante = this.vacanteForm.value;
-
+      console.log(this.vacanteForm.value);
       const RESP = await this.servicioVacante.addVacante(vacante).toPromise();
       if (RESP.ok) {
         this.snackBar.open(RESP.message, CLOSE, { duration: 5000 });
@@ -70,6 +70,7 @@ export class AddVacanteComponent implements OnInit {
   }
 
   onNoClick(): void {
+    console.log(this.vacanteForm.value);
     this.dialogRef.close({ok: false});
   }
 
