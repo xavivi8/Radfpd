@@ -38,6 +38,7 @@ export class VacantesComponent implements OnInit {
 
   permises: Permises;
 
+  // Columnas que se mostrarán en la tabla de vacantes
   displayedColumns: string[] = [
     "id_vacante",
     "entidad",
@@ -48,6 +49,7 @@ export class VacantesComponent implements OnInit {
     "actions",
   ];
 
+  // Filtros de búsqueda
   private filterValues = {
     id_vacante: "",
     entidad: "",
@@ -63,7 +65,7 @@ export class VacantesComponent implements OnInit {
   ) { }
 
   /**
-   *
+   * Método que se ejecuta al iniciar el componente
    */
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<Vacante>();
@@ -76,7 +78,7 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
+   * Método para obtener las unidades centro disponibles
    */
   async getUnidadesCentro() {
     const RESPONSE = await this.servicioUnidadesCentro
@@ -88,9 +90,9 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
-   * @param {number} id_unidad_centro
-   * @returns {string}
+   * Método para obtener el nombre de la unidad centro seleccionada
+   * @param {number} id_unidad_centro - ID de la unidad centro
+   * @returns {string} - Nombre de la unidad centro seleccionada
    */
   getNombreUnidadCentroSeleccionada(id_unidad_centro: number): string {
     const unidadSeleccionada = this.unidades.find(unidad => unidad.id_unidad_centro === id_unidad_centro);
@@ -98,7 +100,7 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
+   * Método para obtener las vacantes disponibles
    */
   async getVacantes() {
     const RESPONSE = await this.vacanteService.getVacantes().toPromise();
@@ -116,8 +118,8 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
-   * @param {Vacante} vacante
+   * Método para obtener la lista de alumnos seleccionados en una vacante
+   * @param {Vacante} vacante - Vacante
    */
   async getAlumnosSeleccionados(vacante: Vacante) {
     const RESPONSE = await this.vacanteService.getListadoAlumnos(vacante.id_unidad_centro).toPromise();
@@ -128,7 +130,7 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
+   * Método para agregar una nueva vacante
    */
   async addVacante() {
     const dialogRef = this.dialog.open(AddVacanteComponent, {
@@ -141,8 +143,8 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
-   * @param {Vacante} vacante
+   * Método para editar una vacante existente
+   * @param {Vacante} vacante - Vacante a editar
    */
   async editVacante(vacante: Vacante) {
     const dialogRef = this.dialog.open(EditVacanteComponent, {
@@ -156,8 +158,8 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
-   * @param {Vacante} vacante
+   * Método para eliminar una vacante existente
+   * @param {Vacante} vacante - Vacante a eliminar
    */
   async deleteVacante(vacante: Vacante) {
     const dialogRef = this.dialog.open(DeleteVacanteComponent, {
@@ -171,8 +173,8 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
-   * @returns {boolean}
+   * Método para crear la función de filtro para la tabla de vacantes
+   * @returns {boolean} - Función de filtro para la tabla de vacantes
    */
   createFilter(): (vacante: Vacante, filter: string) => boolean {
     const filterFunction = (vacante: Vacante, filter: string): boolean => {
@@ -190,7 +192,7 @@ export class VacantesComponent implements OnInit {
   }
 
   /**
-   *
+   * Método para realizar cambios en los filtros de la tabla
    */
   onChanges() {
     this.idVacanteFilter.valueChanges.subscribe((value) => {
