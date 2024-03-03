@@ -170,7 +170,7 @@ export class EditVacanteComponent implements OnInit {
       // Obtener el array de IDs de los alumnos seleccionados
       const idsAlumnos: number[] = vacante.alumnosSeleccionados.map(
         (alumno) => {
-          return alumno.id_alumno;
+          return alumno.id;
         }
       );
 
