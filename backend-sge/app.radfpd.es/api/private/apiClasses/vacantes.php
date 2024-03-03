@@ -64,20 +64,27 @@ class Vacantes extends Conexion
         $id_entidad = $data['id_entidad'];
         $id_unidad_centro = $data['id_unidad_centro'];
         $num_alumnos = $data['num_alumnos'];
-
-        if (isset($id_vacante) && isset($id_entidad) && isset($id_unidad_centro)) {
+    
+        // Verificar si la entidad existe en la tabla sgi_entidades
+        $sql_check_entidad = $this->conexion->prepare("SELECT COUNT(*) FROM sgi_entidades WHERE entidad = :id_entidad");
+        $sql_check_entidad->bindParam(":id_entidad", $id_entidad, PDO::PARAM_STR);
+        $sql_check_entidad->execute();
+        $entidad_exists = $sql_check_entidad->fetchColumn();
+    
+        if ($entidad_exists) {
+            // La entidad es válida, proceder con la actualización
             $sql = $this->conexion->prepare("UPDATE sgi_vacantes SET
                     id_vacante = :id_vacante,
                     entidad = :id_entidad,
                     id_unidad_centro = :id_unidad_centro,
                     num_alumnos = :num_alumnos
                     WHERE id_vacante = :id_vacante");
-
+    
             $sql->bindParam(":id_vacante", $id_vacante, PDO::PARAM_INT);
             $sql->bindParam(":id_entidad", $id_entidad, PDO::PARAM_STR);
             $sql->bindParam(":id_unidad_centro", $id_unidad_centro, PDO::PARAM_INT);
             $sql->bindParam(":num_alumnos", $num_alumnos, PDO::PARAM_INT);
-
+    
             $resultado = $sql->execute();
             if ($resultado) {
                 $this->status = true;
@@ -85,9 +92,12 @@ class Vacantes extends Conexion
             } else {
                 $this->message = "Error al editar la vacante.";
             }
-
-            $this->closeConnection();
+        } else {
+            // La entidad no existe, devolver mensaje de error
+            $this->message = "La entidad especificada no existe.";
         }
+    
+        $this->closeConnection();
     }
 
     // Método para borrar una vacante por ID
