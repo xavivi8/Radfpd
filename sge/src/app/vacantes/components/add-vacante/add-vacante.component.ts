@@ -20,13 +20,18 @@ export class AddVacanteComponent implements OnInit {
   entidades: Entidad[];
   unidades: UnidadCentro[];
 
-  constructor(public dialogRef: MatDialogRef<AddVacanteComponent>,
-              private servicioVacante: VacanteService,
-              private servicioEntidades: EntidadesService,
-              private servicioUnidadesCentro: UnidadesCentroService,
-              public snackBar: MatSnackBar
+  constructor(
+    public dialogRef: MatDialogRef<AddVacanteComponent>,
+    private servicioVacante: VacanteService,
+    private servicioEntidades: EntidadesService,
+    private servicioUnidadesCentro: UnidadesCentroService,
+    public snackBar: MatSnackBar
   ) { }
 
+  /**
+   * Se ejecuta al iniciar el componente.
+   * Inicializa el formulario y carga los datos necesarios.
+   */
   ngOnInit() {
     this.vacanteForm = new FormGroup({
       id_vacante: new FormControl(0),
@@ -34,58 +39,62 @@ export class AddVacanteComponent implements OnInit {
       id_unidad_centro: new FormControl(null, Validators.required),
       num_alumnos: new FormControl(null, Validators.required),
     });
-    console.log("Es una add vacante"+this.vacanteForm.value)
-    this.getEntidades();
-    this.getUnidadesCentro();
+    this.loadData();
   }
 
-  async getEntidades() {
-    const RESPONSE = await this.servicioEntidades.getAllEntidades().toPromise();
-    if (RESPONSE.ok) {
-      this.entidades = RESPONSE.data as Entidad[];
+  /**
+   * Carga los datos necesarios para el formulario.
+   * Utiliza async/await para esperar las respuestas de las solicitudes HTTP.
+   */
+  async loadData() {
+    try {
+      // Se espera a que ambas llamadas asíncronas se completen y se almacenan las respuestas en un array.
+      const [entidadesResponse, unidadesResponse] = await Promise.all([
+        this.servicioEntidades.getAllEntidades().toPromise(), // Llamada al servicio para obtener entidades.
+        this.servicioUnidadesCentro.getAllUnidadesCentro().toPromise() // Llamada al servicio para obtener unidades de centro.
+      ]);
+
+      // Si la respuesta de entidades es exitosa, se guardan los datos en un array
+      if (entidadesResponse.ok) {
+        this.entidades = entidadesResponse.data as Entidad[];
+      }
+
+      // Si la respuesta de unidades es exitosa, se guardan los datos en un array
+      if (unidadesResponse.ok) {
+        this.unidades = unidadesResponse.data as UnidadCentro[];
+      }
+    } catch (error) { // Captura cualquier error ocurrido durante las llamadas a los servicios.
+      console.error('Error al cargar datos:', error); // Imprime el error en la consola.
+      // Muestra una notificación al usuario indicando que hubo un error al cargar los datos.
+      this.snackBar.open('Error al cargar datos', CLOSE, { duration: 5000 });
     }
   }
 
-  async getUnidadesCentro() {
-    const RESPONSE = await this.servicioUnidadesCentro.getAllUnidadesCentro().toPromise();
-    if (RESPONSE.ok) {
-      this.unidades = RESPONSE.data as UnidadCentro[];
-    }
-  }
-
+  /**
+   * Confirma la adición de la vacante.
+   * Valida el formulario y realiza la solicitud HTTP para agregar la vacante.
+   */
   async confirmAdd() {
-    console.log(this.vacanteForm.valid);
     if (this.vacanteForm.valid) {
-      // Obtiene los datos del formulario
       const vacante = this.vacanteForm.value;
       try {
-        // Realiza la solicitud para agregar la vacante y espera la respuesta
         const response = await this.servicioVacante.addVacante(vacante).toPromise();
-        console.log(response);
-
-        // Verifica si la respuesta es exitosa (ok === true)
-        if (response.ok) {
-          // Muestra un mensaje de éxito y cierra el diálogo con la respuesta del servidor
-          this.snackBar.open(response.message, CLOSE, { duration: 5000 });
-          this.dialogRef.close({ ok: response.ok, data: response.data });
-        } else {
-          // Muestra un mensaje de error en caso de una respuesta no exitosa
-          this.snackBar.open(response.message, CLOSE, { duration: 5000 });
-        }
+        this.snackBar.open(response.message, CLOSE, { duration: 5000 });
+        this.dialogRef.close({ ok: response.ok, data: response.data });
       } catch (error) {
-        // Captura y maneja cualquier error de la solicitud HTTP
         console.error('Error al procesar la solicitud:', error);
         this.snackBar.open('Error al procesar la solicitud', CLOSE, { duration: 5000 });
       }
     } else {
-      // Muestra un mensaje si el formulario no es válido
       this.snackBar.open(INVALID_FORM, CLOSE, { duration: 5000 });
       this.dialogRef.close({ ok: false });
     }
   }
 
+  /**
+   * Cierra el diálogo sin realizar ninguna acción.
+   */
   onNoClick(): void {
-    console.log(this.vacanteForm.value);
     this.dialogRef.close({ok: false});
   }
 

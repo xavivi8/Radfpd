@@ -12,15 +12,19 @@ import { CLOSE } from 'src/app/shared/messages';
 })
 export class DeleteVacanteComponent implements OnInit {
 
-  constructor(public dialogRef: MatDialogRef<DeleteVacanteComponent>,
+  constructor(
+    public dialogRef: MatDialogRef<DeleteVacanteComponent>,
     @Inject(MAT_DIALOG_DATA) public vacante: Vacante,
     private vacanteService: VacanteService,
     private snackBar: MatSnackBar
-) { }
+  ) { }
 
   ngOnInit(): void {
   }
 
+  /**
+   * Método asincrónico para eliminar una vacante.
+   */
   async deleteVacante() {
     const RESP = await this.vacanteService.deleteVacante(this.vacante.id_vacante).toPromise();
     if (RESP.ok) {
@@ -31,6 +35,9 @@ export class DeleteVacanteComponent implements OnInit {
     }
   }
 
+  /**
+   * Método para cerrar el diálogo sin eliminar la vacante.
+   */
   onNoClick() {
     this.dialogRef.close({ok: false});
   }
