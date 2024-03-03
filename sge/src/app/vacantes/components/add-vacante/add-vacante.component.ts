@@ -54,22 +54,33 @@ export class AddVacanteComponent implements OnInit {
   }
 
   async confirmAdd() {
+    console.log(this.vacanteForm.valid);
     if (this.vacanteForm.valid) {
+      // Obtiene los datos del formulario
       const vacante = this.vacanteForm.value;
-      console.log(this.vacanteForm.value);
-      const RESP = await this.servicioVacante.addVacante(vacante).toPromise();
-      console.log(RESP);
+      try {
+        // Realiza la solicitud para agregar la vacante y espera la respuesta
+        const response = await this.servicioVacante.addVacante(vacante).toPromise();
+        console.log(response);
 
-      if (RESP.ok) {
-        this.snackBar.open(RESP.message, CLOSE, { duration: 5000 });
-        this.dialogRef.close({ok: RESP.ok, data: RESP.data});
-      } else {
-        this.snackBar.open(RESP.message, CLOSE, { duration: 5000 });
-
+        // Verifica si la respuesta es exitosa (ok === true)
+        if (response.ok) {
+          // Muestra un mensaje de éxito y cierra el diálogo con la respuesta del servidor
+          this.snackBar.open(response.message, CLOSE, { duration: 5000 });
+          this.dialogRef.close({ ok: response.ok, data: response.data });
+        } else {
+          // Muestra un mensaje de error en caso de una respuesta no exitosa
+          this.snackBar.open(response.message, CLOSE, { duration: 5000 });
+        }
+      } catch (error) {
+        // Captura y maneja cualquier error de la solicitud HTTP
+        console.error('Error al procesar la solicitud:', error);
+        this.snackBar.open('Error al procesar la solicitud', CLOSE, { duration: 5000 });
       }
     } else {
+      // Muestra un mensaje si el formulario no es válido
       this.snackBar.open(INVALID_FORM, CLOSE, { duration: 5000 });
-      this.dialogRef.close({ok: false});
+      this.dialogRef.close({ ok: false });
     }
   }
 
