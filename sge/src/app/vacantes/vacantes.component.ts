@@ -38,7 +38,16 @@ export class VacantesComponent implements OnInit {
 
   permises: Permises;
 
-  displayedColumns: string[];
+  displayedColumns: string[] = [
+    "id_vacante",
+    "entidad",
+    "id_unidad_centro",
+    "unidad_centro",
+    "num_alumnos",
+    "elegidos_total",
+    "actions",
+  ];
+
   private filterValues = {
     id_vacante: "",
     entidad: "",
@@ -53,11 +62,22 @@ export class VacantesComponent implements OnInit {
     private overlay: Overlay
   ) { }
 
+  /**
+   *
+   */
   ngOnInit(): void {
+    this.dataSource = new MatTableDataSource<Vacante>();
     this.getVacantes();
     this.getUnidadesCentro();
+    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.filterPredicate = this.createFilter();
+    this.onChanges();
   }
 
+  /**
+   *
+   */
   async getUnidadesCentro() {
     const RESPONSE = await this.servicioUnidadesCentro
       .getAllUnidadesCentro()
@@ -67,12 +87,19 @@ export class VacantesComponent implements OnInit {
     }
   }
 
-  // Método para mostrar el nombre de la unidad_centro correspondiente al id_unidad_centro elegido
+  /**
+   *
+   * @param {number} id_unidad_centro
+   * @returns {string}
+   */
   getNombreUnidadCentroSeleccionada(id_unidad_centro: number): string {
     const unidadSeleccionada = this.unidades.find(unidad => unidad.id_unidad_centro === id_unidad_centro);
     return unidadSeleccionada ? unidadSeleccionada.unidad_centro : '';
   }
 
+  /**
+   *
+   */
   async getVacantes() {
     const RESPONSE = await this.vacanteService.getVacantes().toPromise();
     this.permises = RESPONSE.permises;
@@ -80,28 +107,18 @@ export class VacantesComponent implements OnInit {
     if (RESPONSE.ok) {
       this.vacantes = RESPONSE.data as Vacante[];
 
-      // Para cada vacante, obtenemos la lista de alumnos seleccionados y actualizamos 'elegidos_total'
       for (const vacante of this.vacantes) {
         await this.getAlumnosSeleccionados(vacante);
       }
 
-      this.displayedColumns = [
-        "id_vacante",
-        "entidad",
-        "id_unidad_centro",
-        "unidad_centro",
-        "num_alumnos",
-        "elegidos_total",
-        "actions",
-      ];
       this.dataSource.data = this.vacantes;
-      this.dataSource.sort = this.sort;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.filterPredicate = this.createFilter();
-      this.onChanges();
     }
   }
 
+  /**
+   *
+   * @param {Vacante} vacante
+   */
   async getAlumnosSeleccionados(vacante: Vacante) {
     const RESPONSE = await this.vacanteService.getListadoAlumnos(vacante.id_unidad_centro).toPromise();
     if (RESPONSE.ok) {
@@ -110,71 +127,71 @@ export class VacantesComponent implements OnInit {
     }
   }
 
+  /**
+   *
+   */
   async addVacante() {
     const dialogRef = this.dialog.open(AddVacanteComponent, {
       scrollStrategy: this.overlay.scrollStrategies.noop(),
     });
     const RESULT = await dialogRef.afterClosed().toPromise();
-    if (RESULT) {
-      if (RESULT.ok) {
-        this.vacanteService.vacante.push(RESULT.data);
-        this.dataSource.data = this.vacanteService.vacante;
-        this.ngOnInit();
-      }
+    if (RESULT && RESULT.ok) {
+      this.getVacantes();
     }
   }
 
+  /**
+   *
+   * @param {Vacante} vacante
+   */
   async editVacante(vacante: Vacante) {
     const dialogRef = this.dialog.open(EditVacanteComponent, {
       data: vacante,
       scrollStrategy: this.overlay.scrollStrategies.noop(),
     });
     const RESULT = await dialogRef.afterClosed().toPromise();
-    if (RESULT) {
-      if (RESULT.ok) {
-        this.vacanteService.editVacante(RESULT.data);
-        this.dataSource.data = this.vacanteService.vacante;
-        this.ngOnInit();
-      }
+    if (RESULT && RESULT.ok) {
+      this.getVacantes();
     }
   }
 
+  /**
+   *
+   * @param {Vacante} vacante
+   */
   async deleteVacante(vacante: Vacante) {
     const dialogRef = this.dialog.open(DeleteVacanteComponent, {
       data: vacante,
       scrollStrategy: this.overlay.scrollStrategies.noop(),
     });
     const RESULT = await dialogRef.afterClosed().toPromise();
-    if (RESULT) {
-      if (RESULT.ok) {
-        this.vacanteService.deleteVacante(RESULT.data);
-        this.dataSource.data = this.vacanteService.vacante;
-        this.ngOnInit();
-      }
+    if (RESULT && RESULT.ok) {
+      this.getVacantes();
     }
   }
 
+  /**
+   *
+   * @returns {boolean}
+   */
   createFilter(): (vacante: Vacante, filter: string) => boolean {
     const filterFunction = (vacante: Vacante, filter: string): boolean => {
       const searchTerms = JSON.parse(filter);
 
       return (
         vacante.id_vacante.toString().indexOf(searchTerms.id_vacante) !== -1 &&
-        vacante.entidad
-          .toLowerCase()
-          .indexOf(searchTerms.entidad.toLowerCase()) !== -1 &&
-        vacante.id_unidad_centro
-          .toString()
-          .indexOf(searchTerms.id_unidad_centro.toLowerCase()) !== -1 &&
-        vacante.num_alumnos
-          .toString()
-          .indexOf(searchTerms.num_alumnos.toLowerCase()) !== -1
+        vacante.entidad.toLowerCase().indexOf(searchTerms.entidad.toLowerCase()) !== -1 &&
+        vacante.id_unidad_centro.toString().indexOf(searchTerms.id_unidad_centro.toLowerCase()) !== -1 &&
+        vacante.num_alumnos.toString().indexOf(searchTerms.num_alumnos.toLowerCase()) !== -1
       );
     };
 
     return filterFunction;
   }
 
+  /**
+   *
+   */
   onChanges() {
     this.idVacanteFilter.valueChanges.subscribe((value) => {
       this.filterValues.id_vacante = value;
