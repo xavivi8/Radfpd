@@ -17,7 +17,6 @@ if (isset($_GET["usuario"])) {
 }
 
 if ($authorization->token_valido) {
-
     switch ($_SERVER['REQUEST_METHOD']) {
         case $api_utils::GET:
             if (isset($usuario)) {
@@ -34,14 +33,13 @@ if ($authorization->token_valido) {
             }
             break;
         case $api_utils::DELETE:
-            if (isset($request['usuario']) && isset($request['identificador'])) {
-                $peli_fav->deletePeliFav($request['usuario'], $request['identificador']);
+            if (isset($_GET['usuario']) && isset($_GET['identificador'])) {
+                $usuario = $_GET['usuario'];
+                $identificador = $_GET['identificador'];
+                $peli_fav->deletePeliFav($usuario, $identificador);
             } else {
                 $peli_fav->message = "Datos incompletos para eliminar una película favorita.";
             }
-            break;
-        default:
-            $peli_fav->message = "Método HTTP no soportado.";
     }
 } else {
     $peli_fav->message = "Token inválido.";
